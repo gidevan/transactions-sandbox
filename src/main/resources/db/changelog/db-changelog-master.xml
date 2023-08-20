@@ -11,15 +11,29 @@
     <changeSet id="changeset1" author="vsanyc">
         <createTable tableName="speaker">
             <column name="id" type="bigint">
-                <constraints primaryKey="true" primaryKeyName="house_id_pk" />
+                <constraints primaryKey="true" primaryKeyName="speaker_id_pk" />
             </column>
             <column name="speaker_name" type="varchar(250)">
-                <constraints unique="true" uniqueConstraintName="house_owner_unq" />
+                <constraints unique="true" uniqueConstraintName="speaker_name_unq" />
             </column>
             <column name="like_count" type="bigint"></column>
         </createTable>
         <addAutoIncrement tableName="speaker" columnName="id" columnDataType="bigint" startWith="1000" incrementBy="1" />
         <createSequence sequenceName="hibernate_sequence" incrementBy="1" startValue="1000" />
 
+    </changeSet>
+
+    <changeSet id="changeset2" author="vsanyc">
+        <insert tableName="speaker">
+            <column name="id">1</column>
+            <column name="speaker_name">speaker_name1</column>
+            <column name="like_count">0</column>
+        </insert>
+
+        <insert tableName="speaker">
+            <column name="id">2</column>
+            <column name="speaker_name">speaker_name2</column>
+            <column name="like_count">0</column>
+        </insert>
     </changeSet>
 </databaseChangeLog>
