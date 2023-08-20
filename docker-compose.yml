@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  postgres-db:
+    image: postgres:15.4
+    environment:
+      POSTGRES_DB: "test_database"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5431:5432"
+    networks:
+      - sandbox-network
+  transactions-sandbox:
+    image: vsanyc/transactions-sandbox:0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:            
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/test_database
+      - SPRING_LIQUIBASE_CHANGE_LOG=classpath:db/changelog/db-changelog-master.xml
+    networks:
+      - sandbox-network
+    depends_on:
+      - postgres-db
+networks:
+  sandbox-network:
+    driver: bridge

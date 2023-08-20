@@ -1,0 +1,10 @@
+spring:
+  jpa:
+    show-sql: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: postgres
+    url: jdbc:postgresql://localhost:5431/test_database
+    username: postgres
+  liquibase:
+    change-log: classpath:db/changelog/db-changelog-master.xml
