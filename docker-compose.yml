@@ -26,6 +26,23 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
       - sandbox-network
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    ports:
+      - 8090:8080
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka-1:29092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper-1:2181
+    links:
+      - kafka-1
+      - zookeeper-1
+    networks:
+      - sandbox-network
+
   postgres-db:
     image: postgres:15.4
     environment:
@@ -36,22 +53,43 @@ services:
       - "5431:5432"
     networks:
       - sandbox-network
-  transactions-sandbox:
+
+  transactions-sandbox-consumer:
     image: vsanyc/transactions-sandbox:0.1
     build:
       context: .
       dockerfile: Dockerfile
     ports:            
-      - "8080:8080"
+      - "8081:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/test_database
       - SPRING_LIQUIBASE_CHANGE_LOG=classpath:db/changelog/db-changelog-master.xml
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:29092
+      - SPRING_KAFKA_CONNECTION_TYPE=consumer
     networks:
       - sandbox-network
     depends_on:
       - postgres-db
       - kafka-1
+
+  transactions-sandbox-producer:
+    image: vsanyc/transactions-sandbox:0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/test_database
+      - SPRING_LIQUIBASE_CHANGE_LOG=classpath:db/changelog/db-changelog-master.xml
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:29092
+      - SPRING_KAFKA_CONNECTION_TYPE=producer
+    networks:
+      - sandbox-network
+    depends_on:
+      - postgres-db
+      - kafka-1
+      - transactions-sandbox-consumer
 networks:
   sandbox-network:
     driver: bridge

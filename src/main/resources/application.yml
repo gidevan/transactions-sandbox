@@ -11,3 +11,4 @@ spring:
   kafka:
     bootstrap-servers: localhost:29092
     speaker-like-topic: speakerLikeTopic
+    connection-type:

@@ -21,6 +21,7 @@
         <maven.surefire.plugin.version>3.1.2</maven.surefire.plugin.version>
         <liquibase.version>4.23.1</liquibase.version>
         <postgres.version>42.6.0</postgres.version>
+        <lombok.version>1.18.28</lombok.version>
     </properties>
 
     <dependencies>
@@ -44,6 +45,13 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
