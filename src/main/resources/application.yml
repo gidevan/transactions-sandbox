@@ -8,3 +8,6 @@ spring:
     username: postgres
   liquibase:
     change-log: classpath:db/changelog/db-changelog-master.xml
+  kafka:
+    bootstrap-servers: localhost:29092
+    speaker-like-topic: speakerLikeTopic

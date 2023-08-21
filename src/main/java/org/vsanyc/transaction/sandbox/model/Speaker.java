@@ -1,4 +1,4 @@
-package org.vsanyc.model;
+package org.vsanyc.transaction.sandbox.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
