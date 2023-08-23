@@ -1,0 +1,4 @@
+transaction sandbox project
+
+1) run gatling test
+mvn gatling:test
