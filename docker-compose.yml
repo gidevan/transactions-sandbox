@@ -20,7 +20,9 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:9092,PLAINTEXT_HOST://kafka-1:29092
+      #KAFKA_ADVERTISED_LISTENERS: INTERNAL:PLAINTEXT://kafka-1:9092,INTERNAL:PLAINTEXT_HOST://kafka-1:29092,OUTSIDE:PLAINTEXT://127.0.0.1:9092,OUTSIDE:PLAINTEXT_HOST://127.0.0.1:29092
+      #KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT_HOST:PLAINTEXT,OUTSIDE:PLAINTEXT:PLAINTEXT,OUTSIDE:PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -32,10 +34,9 @@ services:
     container_name: kafka-ui
     ports:
       - 8090:8080
-    restart: always
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka-1:29092
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka-1:9092
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper-1:2181
     links:
       - kafka-1
@@ -64,7 +65,7 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/test_database
       - SPRING_LIQUIBASE_CHANGE_LOG=classpath:db/changelog/db-changelog-master.xml
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:29092
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:9092
       - SPRING_KAFKA_CONNECTION_TYPE=consumer
     networks:
       - sandbox-network
@@ -82,8 +83,9 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/test_database
       - SPRING_LIQUIBASE_CHANGE_LOG=classpath:db/changelog/db-changelog-master.xml
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:29092
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:9092
       - SPRING_KAFKA_CONNECTION_TYPE=producer
+      - SPRING_LIQUIBASE_ENABLED=false
     networks:
       - sandbox-network
     depends_on:

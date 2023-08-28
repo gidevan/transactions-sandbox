@@ -18,8 +18,7 @@
             </column>
             <column name="like_count" type="bigint"></column>
         </createTable>
-        <addAutoIncrement tableName="speaker" columnName="id" columnDataType="bigint" startWith="1000" incrementBy="1" />
-        <createSequence sequenceName="hibernate_sequence" incrementBy="1" startValue="1000" />
+        <createSequence sequenceName="speaker_sequence" incrementBy="1" startValue="1000" />
 
     </changeSet>
 
@@ -35,5 +34,24 @@
             <column name="speaker_name">speaker_name2</column>
             <column name="like_count">0</column>
         </insert>
+    </changeSet>
+
+    <changeSet id="changeset3" author="vsanyc">
+        <createTable tableName="like_speaker_history">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="like_speaker_history_id_pk" />
+            </column>
+            <column name="speaker_name" type="varchar(250)"></column>
+            <column name="thread_name" type="varchar(250)"></column>
+            <column name="created" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated" type="timestamp" />
+        </createTable>
+        <createSequence sequenceName="speaker_history_sequence" startValue="1000" />
+    </changeSet>
+    <changeSet id="chnageset4" author="vsanyc">
+        <addColumn tableName="speaker">
+            <column name="created" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated" type="timestamp" />
+        </addColumn>
     </changeSet>
 </databaseChangeLog>

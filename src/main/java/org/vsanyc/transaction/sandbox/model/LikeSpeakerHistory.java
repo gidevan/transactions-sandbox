@@ -9,18 +9,20 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-public class Speaker {
+public class LikeSpeakerHistory {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SPEAKER_SEQ")
-    @SequenceGenerator(name = "SPEAKER_SEQ", sequenceName = "SPEAKER_SEQUENCE", initialValue = 1000,
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SPEAKER_HISTORY_SEQ")
+    @SequenceGenerator(name = "SPEAKER_HISTORY_SEQ", sequenceName = "SPEAKER_HISTORY_SEQUENCE", initialValue = 1000,
             allocationSize = 1)
     private Long id;
 
     private String speakerName;
 
-    private Long likeCount;
+    private String threadName;
 
     private LocalDateTime created;
+
     private LocalDateTime updated;
 
 }

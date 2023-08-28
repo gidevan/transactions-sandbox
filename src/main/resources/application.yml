@@ -2,6 +2,9 @@ spring:
   jpa:
     show-sql: true
   datasource:
+    hikari:
+      max-pool-size: 10
+      transaction-isolation: TRANSACTION_REPEATABLE_READ
     driver-class-name: org.postgresql.Driver
     password: postgres
     url: jdbc:postgresql://localhost:5431/test_database

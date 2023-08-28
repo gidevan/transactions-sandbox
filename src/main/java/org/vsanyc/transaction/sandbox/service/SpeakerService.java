@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.vsanyc.transaction.sandbox.model.Speaker;
+import org.vsanyc.transaction.sandbox.model.LikeSpeakerHistory;
 import org.vsanyc.transaction.sandbox.model.SpeakerLikeData;
+import org.vsanyc.transaction.sandbox.repository.SpeakerHistoryRepository;
 import org.vsanyc.transaction.sandbox.repository.SpeakerRepository;
 
 import java.util.List;
@@ -21,6 +23,8 @@ public class SpeakerService {
 
     private ObjectMapper objectMapper;
 
+    private SpeakerHistoryRepository speakerHistoryRepository;
+
     @Value(value = "${spring.kafka.speaker-like-topic}")
     private String speakerLikeTopic;
 
@@ -29,10 +33,12 @@ public class SpeakerService {
         return speakerRepository.findAll();
     }
 
-    public SpeakerService(SpeakerRepository speakerRepository, KafkaService kafkaService, ObjectMapper objectMapper) {
+    public SpeakerService(SpeakerRepository speakerRepository, KafkaService kafkaService, ObjectMapper objectMapper,
+                          SpeakerHistoryRepository speakerHistoryRepository) {
         this.speakerRepository = speakerRepository;
         this.kafkaService = kafkaService;
         this.objectMapper = objectMapper;
+        this.speakerHistoryRepository = speakerHistoryRepository;
     }
 
     public Speaker findById(Long id) {
@@ -54,6 +60,14 @@ public class SpeakerService {
             speaker.setLikeCount(++likes);
             log.info("Update likes for [{}]. Likes value is [{}]", speaker.getSpeakerName(), likes);
             speakerRepository.save(speaker);
+            updateSpeakerHistory(speakerLikeData);
         }, () -> log.error("No data for speaker [{}]", speakerLikeData.getSpeakerName())) ;
+    }
+
+    private void updateSpeakerHistory(SpeakerLikeData speakerLikeData) {
+        var speakerHistory = new LikeSpeakerHistory();
+        speakerHistory.setSpeakerName(speakerLikeData.getSpeakerName());
+        speakerHistory.setThreadName(speakerLikeData.getThreadName());
+        speakerHistoryRepository.save(speakerHistory);
     }
 }

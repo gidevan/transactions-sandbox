@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.vsanyc.transaction.sandbox.model.SpeakerLikeData;
 import org.vsanyc.transaction.sandbox.service.SpeakerService;
 
+import java.util.Random;
+
 @Service
 @Slf4j
 @ConditionalOnProperty(name = "connection-type", prefix = "spring.kafka", havingValue = "consumer")
