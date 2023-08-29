@@ -35,8 +35,8 @@ public class KafkaProducerTest extends Simulation {
     {
 
         setUp(
-                kafkaProducer.injectOpen(incrementUsersPerSec(1000)
-                        .times(1)
+                kafkaProducer.injectOpen(incrementUsersPerSec(6000)
+                        .times(2)
                         .eachLevelLasting(2)
                         //.separatedByRampsLasting(10)
                         .startingFrom(1))

@@ -15,3 +15,15 @@ spring:
     bootstrap-servers: localhost:29092
     speaker-like-topic: speakerLikeTopic
     connection-type:
+
+management:
+  endpoint:
+    health:
+      group:
+        health-group:
+          include: ping, diskSpace
+      show-details: ALWAYS
+  endpoints:
+    web:
+      exposure:
+        include: '*'

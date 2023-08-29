@@ -2,3 +2,7 @@ transaction sandbox project
 
 1) run gatling test
 mvn gatling:test
+
+2) grafana
+https://habr.com/ru/articles/548700/
+https://www.linkedin.com/learning/advanced-spring-spring-boot-actuator/creating-dashboards-with-grafana?autoSkip=true&resume=false

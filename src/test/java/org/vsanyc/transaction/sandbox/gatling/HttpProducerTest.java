@@ -26,7 +26,7 @@ public class HttpProducerTest extends Simulation {
             .exec(http("like speaker2 _2").post("/speaker_name2"));
 
     {
-        setUp(scn.injectOpen(constantUsersPerSec(1000).during(Duration.ofMillis(1000))))
+        setUp(scn.injectOpen(constantUsersPerSec(8000).during(Duration.ofMillis(1000))))
                 .protocols(httpProtocol);
     }
 
