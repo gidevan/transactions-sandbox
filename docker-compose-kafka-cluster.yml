@@ -1,0 +1,242 @@
+version: '3.8'
+services:
+  zookeeper-1:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    networks:
+      - sandbox-network
+
+  zookeeper-2:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 32181:2181
+    networks:
+      - sandbox-network
+
+  zookeeper-3:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 42181:2181
+    networks:
+      - sandbox-network
+
+  kafka-1:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+    ports:
+      - 29092:29092
+    healthcheck:
+      test: nc -z localhost 29092 || exit -1
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
+      #KAFKA_ADVERTISED_LISTENERS: INTERNAL:PLAINTEXT://kafka-1:9092,INTERNAL:PLAINTEXT_HOST://kafka-1:29092,OUTSIDE:PLAINTEXT://127.0.0.1:9092,OUTSIDE:PLAINTEXT_HOST://127.0.0.1:29092
+      #KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT_HOST:PLAINTEXT,OUTSIDE:PLAINTEXT:PLAINTEXT,OUTSIDE:PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:28092,PLAINTEXT_HOST://kafka-1:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      BOOTSTRAP_SERVERS: kafka-1:29092,kafka-2:39092,kafka-3:49092
+    networks:
+      - sandbox-network
+
+  kafka-2:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+    ports:
+      - 39092:39092
+    healthcheck:
+      test: nc -z localhost 39092 || exit -1
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
+      #KAFKA_ADVERTISED_LISTENERS: INTERNAL:PLAINTEXT://kafka-1:9092,INTERNAL:PLAINTEXT_HOST://kafka-1:29092,OUTSIDE:PLAINTEXT://127.0.0.1:9092,OUTSIDE:PLAINTEXT_HOST://127.0.0.1:29092
+      #KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT_HOST:PLAINTEXT,OUTSIDE:PLAINTEXT:PLAINTEXT,OUTSIDE:PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:38092,PLAINTEXT_HOST://kafka-2:39092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      BOOTSTRAP_SERVERS: kafka-1:29092,kafka-2:39092,kafka-3:49092
+    networks:
+      - sandbox-network
+
+  kafka-3:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+    ports:
+      - 49092:49092
+    healthcheck:
+      test: nc -z localhost 49092 || exit -1
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
+      #KAFKA_ADVERTISED_LISTENERS: INTERNAL:PLAINTEXT://kafka-1:9092,INTERNAL:PLAINTEXT_HOST://kafka-1:29092,OUTSIDE:PLAINTEXT://127.0.0.1:9092,OUTSIDE:PLAINTEXT_HOST://127.0.0.1:29092
+      #KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT_HOST:PLAINTEXT,OUTSIDE:PLAINTEXT:PLAINTEXT,OUTSIDE:PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:48092,PLAINTEXT_HOST://kafka-3:49092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      BOOTSTRAP_SERVERS: kafka-1:29092,kafka-2:39092,kafka-3:49092
+    networks:
+      - sandbox-network
+
+  init-kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+      kafka-3:
+        condition: service_healthy
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      #cub kafka-ready -b broker:9092 1 20
+      # blocks until kafka is reachable
+      echo -e 'Get kafka topics'
+      kafka-topics --bootstrap-server kafka-1:29092 --list
+      
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server kafka-1:29092 --create --if-not-exists --topic my-topic-1 --replication-factor 3 --partitions 3
+     
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server kafka-1:29092 --list
+      "
+    networks:
+      - sandbox-network
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    ports:
+      - 8090:8080
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local_cluster
+      - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=kafka-1:29092,kafka-2:39092,kafka-3:49092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
+    links:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+    depends_on:
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+      kafka-3:
+        condition: service_healthy
+      init-kafka:
+        condition: service_started
+    networks:
+      - sandbox-network
+
+  postgres-db:
+    image: postgres:15.4
+    environment:
+      POSTGRES_DB: "test_database"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5431:5432"
+    networks:
+      - sandbox-network
+
+  transactions-sandbox-consumer:
+    image: vsanyc/transactions-sandbox:0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/test_database
+      - SPRING_LIQUIBASE_CHANGE_LOG=classpath:db/changelog/db-changelog-master.xml
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:9092
+      - SPRING_KAFKA_CONNECTION_TYPE=consumer
+    networks:
+      - sandbox-network
+    depends_on:
+      - postgres-db
+      - kafka-1
+
+  transactions-sandbox-producer:
+    image: vsanyc/transactions-sandbox:0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/test_database
+      - SPRING_LIQUIBASE_CHANGE_LOG=classpath:db/changelog/db-changelog-master.xml
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:9092
+      - SPRING_KAFKA_CONNECTION_TYPE=producer
+      - SPRING_LIQUIBASE_ENABLED=false
+    networks:
+      - sandbox-network
+    depends_on:
+      - postgres-db
+      - kafka-1
+      - transactions-sandbox-consumer
+  prometheus:
+    image: docker.io/prom/prometheus:latest
+    networks:
+      - sandbox-network
+    hostname: prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - transactions-sandbox-consumer
+      - transactions-sandbox-producer
+
+  grafana:
+    build: './grafana'
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - sandbox-network
+
+networks:
+  sandbox-network:
+    driver: bridge
