@@ -48,10 +48,42 @@
         </createTable>
         <createSequence sequenceName="speaker_history_sequence" startValue="1000" />
     </changeSet>
-    <changeSet id="chnageset4" author="vsanyc">
+    <changeSet id="changeset4" author="vsanyc">
         <addColumn tableName="speaker">
             <column name="created" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
             <column name="updated" type="timestamp" />
         </addColumn>
+    </changeSet>
+
+    <changeSet id="changeset5-add-partition-topic-producer" author="vsanyc">
+        <createTable tableName="producer_message">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="producer_message_id_pk" />
+            </column>
+            <column name="producer_id" type="varchar(250)"/>
+            <column name="uuid" type="uuid" />
+            <column name="message" type="varchar(2048)"/>
+            <column name="date_time" type="timestamptz" />
+            <column name="created" type="timestamptz" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated" type="timestamptz" />
+        </createTable>
+        <createSequence sequenceName="producer_message_sequence" incrementBy="1" startValue="1000" />
+    </changeSet>
+
+    <changeSet id="changeset6-add-partition-topic-consumer" author="vsanyc">
+        <createTable tableName="consumer_message">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="consumer_message_id_pk" />
+            </column>
+            <column name="producer_id" type="varchar(250)"/>
+            <column name="consumer_id" type="varchar(250)"/>
+            <column name="uuid" type="uuid" />
+            <column name="consumer_group_id" type="varchar(250)"/>
+            <column name="message" type="varchar(2048)"/>
+            <column name="date_time" type="timestamptz" />
+            <column name="created" type="timestamptz" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated" type="timestamptz" />
+        </createTable>
+        <createSequence sequenceName="consumer_message_sequence" incrementBy="1" startValue="1000" />
     </changeSet>
 </databaseChangeLog>

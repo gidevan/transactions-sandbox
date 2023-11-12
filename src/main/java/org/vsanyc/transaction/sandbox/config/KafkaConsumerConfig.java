@@ -25,7 +25,8 @@ public class KafkaConsumerConfig {
     @Value(value = "${spring.kafka.speaker-like-topic}")
     private String speakerLikeTopic;
 
-    private static final String GROUP_ID = "groupId";
+    @Value("${spring.kafka.consumer-group-id}")
+    private String consumerGroupId;
 
 
     @Bean
@@ -36,7 +37,7 @@ public class KafkaConsumerConfig {
                 bootstrapAddress);
         props.put(
                 ConsumerConfig.GROUP_ID_CONFIG,
-                GROUP_ID);
+                consumerGroupId);
         props.put(
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
                 StringDeserializer.class);
@@ -47,8 +48,7 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String>
-    kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
 
         ConcurrentKafkaListenerContainerFactory<String, String> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();

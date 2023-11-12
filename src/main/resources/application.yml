@@ -15,6 +15,10 @@ spring:
     bootstrap-servers: localhost:29092
     speaker-like-topic: speakerLikeTopic
     connection-type:
+    simple-message-topic:
+    consumer-group-id:
+
+kafka-client-id:
 
 management:
   endpoint:
