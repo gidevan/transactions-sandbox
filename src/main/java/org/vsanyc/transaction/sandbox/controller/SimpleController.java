@@ -21,4 +21,11 @@ public class SimpleController {
         return "Message [" + message +"] is sent at" + LocalDateTime.now();
 
     }
+
+    @GetMapping("/simpletest/generate/{messageCount}")
+    public String generatedMessages(@PathVariable Integer messageCount) throws JsonProcessingException {
+        producerService.generateMessages(messageCount);
+        return messageCount + " messages are sent at" + LocalDateTime.now();
+
+    }
 }

@@ -14,6 +14,8 @@ import java.util.UUID;
 @Service
 public class ProducerService {
 
+    private static final String BATCH_MESSAGE_PREFIX = "BAtchMessage-";
+
     private final String simpleMessageTopic;
 
     private final String kafkaClientId;
@@ -47,6 +49,12 @@ public class ProducerService {
         producerMessageRepository.save(producerMessage);
         var kafkaMessageStr = objectMapper.writeValueAsString(kafkaMessage);
         kafkaService.sendMessage(simpleMessageTopic, kafkaMessageStr);
+    }
+
+    public void generateMessages(int count) throws JsonProcessingException {
+        for(int i = 0; i < count; i++) {
+            sendMessage(BATCH_MESSAGE_PREFIX + kafkaClientId + "_" + i);
+        }
     }
 
     private ProducerMessage createProducerMessage(SimpleMessage message) {

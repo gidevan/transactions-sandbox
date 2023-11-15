@@ -47,7 +47,7 @@ services:
       - 29092:29092
     healthcheck:
       test: nc -z localhost 29092 || exit -1
-      start_period: 15s
+      start_period: 5s
       interval: 5s
       timeout: 10s
       retries: 10
@@ -79,7 +79,7 @@ services:
       - 39092:39092
     healthcheck:
       test: nc -z localhost 39092 || exit -1
-      start_period: 15s
+      start_period: 5s
       interval: 5s
       timeout: 10s
       retries: 10
@@ -113,7 +113,7 @@ services:
       - 49092:49092
     healthcheck:
       test: nc -z localhost 49092 || exit -1
-      start_period: 15s
+      start_period: 5s
       interval: 5s
       timeout: 10s
       retries: 10
@@ -221,6 +221,147 @@ services:
       kafka-3:
         condition: service_healthy
 
+  transactions-sandbox-consumer-2:
+    image: vsanyc/transactions-sandbox:0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/test_database
+      - SPRING_LIQUIBASE_CHANGE_LOG=classpath:db/changelog/db-changelog-master.xml
+      - SPRING_LIQUIBASE_ENABLED=false
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:29092,kafka-2:39092,kafka-3:49092
+      - SPRING_KAFKA_CONNECTION_TYPE=consumer
+      - SPRING_KAFKA_SIMPLE_MESSAGE_TOPIC=local-cluster-topic-1
+      - SPRING_KAFKA_CONSUMER_GROUP_ID=group-id-1
+      - KAFKA_CLIENT_ID=transactionsSandboxConsumer-2
+    networks:
+      - sandbox-network
+    depends_on:
+      postgres-db:
+        condition: service_started
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+      kafka-3:
+        condition: service_healthy
+
+  transactions-sandbox-consumer-3:
+    image: vsanyc/transactions-sandbox:0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/test_database
+      - SPRING_LIQUIBASE_CHANGE_LOG=classpath:db/changelog/db-changelog-master.xml
+      - SPRING_LIQUIBASE_ENABLED=false
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:29092,kafka-2:39092,kafka-3:49092
+      - SPRING_KAFKA_CONNECTION_TYPE=consumer
+      - SPRING_KAFKA_SIMPLE_MESSAGE_TOPIC=local-cluster-topic-1
+      - SPRING_KAFKA_CONSUMER_GROUP_ID=group-id-1
+      - KAFKA_CLIENT_ID=transactionsSandboxConsumer-3
+    networks:
+      - sandbox-network
+    depends_on:
+      postgres-db:
+        condition: service_started
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+      kafka-3:
+        condition: service_healthy
+
+  transactions-sandbox-consumer-4:
+    image: vsanyc/transactions-sandbox:0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/test_database
+      - SPRING_LIQUIBASE_CHANGE_LOG=classpath:db/changelog/db-changelog-master.xml
+      - SPRING_LIQUIBASE_ENABLED=false
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:29092,kafka-2:39092,kafka-3:49092
+      - SPRING_KAFKA_CONNECTION_TYPE=consumer
+      - SPRING_KAFKA_SIMPLE_MESSAGE_TOPIC=local-cluster-topic-1
+      - SPRING_KAFKA_CONSUMER_GROUP_ID=group-id-3
+      - KAFKA_CLIENT_ID=transactionsSandboxConsumer-4
+    networks:
+      - sandbox-network
+    depends_on:
+      postgres-db:
+        condition: service_started
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+      kafka-3:
+        condition: service_healthy
+
+  transactions-sandbox-consumer-5:
+    image: vsanyc/transactions-sandbox:0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/test_database
+      - SPRING_LIQUIBASE_CHANGE_LOG=classpath:db/changelog/db-changelog-master.xml
+      - SPRING_LIQUIBASE_ENABLED=false
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:29092,kafka-2:39092,kafka-3:49092
+      - SPRING_KAFKA_CONNECTION_TYPE=consumer
+      - SPRING_KAFKA_SIMPLE_MESSAGE_TOPIC=local-cluster-topic-1
+      - SPRING_KAFKA_CONSUMER_GROUP_ID=group-id-2
+      - KAFKA_CLIENT_ID=transactionsSandboxConsumer-5
+    networks:
+      - sandbox-network
+    depends_on:
+      postgres-db:
+        condition: service_started
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+      kafka-3:
+        condition: service_healthy
+
+  transactions-sandbox-consumer-6:
+    image: vsanyc/transactions-sandbox:0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8086:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/test_database
+      - SPRING_LIQUIBASE_CHANGE_LOG=classpath:db/changelog/db-changelog-master.xml
+      - SPRING_LIQUIBASE_ENABLED=false
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:29092,kafka-2:39092,kafka-3:49092
+      - SPRING_KAFKA_CONNECTION_TYPE=consumer
+      - SPRING_KAFKA_SIMPLE_MESSAGE_TOPIC=local-cluster-topic-1
+      - SPRING_KAFKA_CONSUMER_GROUP_ID=group-id-2
+      - KAFKA_CLIENT_ID=transactionsSandboxConsumer-6
+    networks:
+      - sandbox-network
+    depends_on:
+      postgres-db:
+        condition: service_started
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+      kafka-3:
+        condition: service_healthy
+
+
   transactions-sandbox-producer:
     image: vsanyc/transactions-sandbox:0.1
     build:
@@ -260,8 +401,10 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     depends_on:
-      - transactions-sandbox-consumer
-      - transactions-sandbox-producer
+      transactions-sandbox-consumer:
+        condition: service_started
+      transactions-sandbox-producer:
+        condition: service_started
 
   grafana:
     build: './grafana'
