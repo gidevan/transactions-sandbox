@@ -1,6 +1,7 @@
 package org.vsanyc.transaction.sandbox.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ public class SpeakerController {
 
 
     @GetMapping("/simple-request")
+    @Timed(value = "simple.request.time", description = "Simple request time description")
     public String simpleRequest() {
         return "Simple response";
     }
